@@ -8,6 +8,7 @@ var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
 
 //delete any existing data
 const seedDB = async () => {
+    await Trip.deleteMany({});
     await Trip.insertMany(trips);
 };
 
