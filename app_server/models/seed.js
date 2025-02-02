@@ -6,14 +6,14 @@ const Trip = require('./travlr');
 var fs = require('fs');
 var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
 
-//delete any existing records, then insert seed data
+//delete any existing data
 const seedDB = async () => {
-    
+    await Mongoose.connection.dropDatabase();
     await Trip.deleteMany({});
     await Trip.insertMany(trips);
 };
 
-//Clear the MongoDB connection and exit
+//Close MongoDB connection and exit
 seedDB().then(async () => {
     await Mongoose.connection.close();
     process.exit(0);

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const host = process.env.DB_HOST || '127.0.0.1';
-const dbURI = `mongodb://${host}/travlr`;
+const dbURI = 'mongodb://${host}/travlr';
 const readLine = require('readline');
 
-//Build the connection string and set the connection timeout
+//Build the connection string and set the connection timeout.
 //timeout is in milliseconds
 const connect = () => {
     setTimeout(() => mongoose.connect(dbURI, {
@@ -12,41 +12,40 @@ const connect = () => {
 
 //Monitor connection events
 mongoose.connection.on('connected', () => {
-    console.log(`Mongoose connected to ${dbURI}`);
+    console.log('Mongoose connected to ${dbURI}');
 });
 
 mongoose.connection.on('error', err => {
-    console.log('Mongoose connection error:', err);
+    console.log('Mongoose connection error: ', err);
 });
 
-mongoose.connection.on('disconnected', () => {
+mongoose.connection.on('disconnected' , () => {
     console.log('Mongoose disconnected');
 });
 
 //Windows specific listner
 if(process.platform === 'win32') {
-    const rl = readLine.createInterface({
+    const r1 = readLine.createInterface({
         input: process.stdin,
         output: process.stdout
     });
-    rl.on('SIGINT', () => {
-        process.emit('SIGINT');
+    r1.on('SIGINT', () => {
+        process.emit("SIGINT");
     });
 }
 
 //Configure for Graceful Shutdown
 const gracefulShutdown = (msg) => {
     mongoose.connection.close(() => {
-        console.log(`Mongoose disconnected through ${msg}`);
+        console.log('Mongoose disconnected through ${msg}');    
     });
 };
 
-//Event Listeners to process graceful shutdown
-
+//Event listeners to process graceful shutdown
 //Shutdown invoked by nodemon signal
 
 process.once('SIGUSR2', () => {
-    gracefulShutdown('nodemon restart');
+    gracefulShutdown('nodemon restartt');
     process.kill(process.pid, 'SIGUSR2');
 });
 
@@ -59,12 +58,13 @@ process.on('SIGINT', () => {
 //Shutdown invoked by container termination
 process.on('SIGTERM', () => {
     gracefulShutdown('app shutdown');
-        process.exit(0);
+    process.exit(0);
 });
 
-//Make initial connection to DB
+//Make initial connection
 connect();
 
 //Import Mongoose schema
 require('./travlr');
 module.exports = mongoose;
+
