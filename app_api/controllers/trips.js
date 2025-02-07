@@ -7,7 +7,7 @@ const Model = mongoose.model('trips');
 //and JSON message to the requestion client
 const tripsList = async(req, res) => {
     const q = await Model
-        .find({})
+        .find({}) //No filter, return all records
         .exec();
 
     //uncomment to show low on console    
@@ -18,7 +18,30 @@ const tripsList = async(req, res) => {
         return res
             .status(404)
             .json(err);
-    } else {
+    } else { //Return resulting trip list
+        return res
+            .status(200)
+            .json(q);
+    }
+};
+
+//GET: /trips - lists all the trips
+//Regardless of outcome, response must include HTML status code
+//and JSON message to the requestion client
+const tripsFindByCode = async(req, res) => {
+    const q = await Model
+        .find({'code': req.params.tripCode}) //Return single record
+        .exec();
+
+    //uncomment to show low on console    
+    //console.log(q);
+
+    if(!q)
+    { //Database returned no data
+        return res
+            .status(404)
+            .json(err);
+    } else { // Return resulting trip list
         return res
             .status(200)
             .json(q);
@@ -26,5 +49,6 @@ const tripsList = async(req, res) => {
 };
 
 module.exports = {
-    tripsList
+    tripsList,
+    tripsFindByCode
 };
