@@ -29,7 +29,6 @@ export class TripListingComponent implements OnInit {
     ) {
     console.log('trip-listing constructor');
   }
-
   public addTrip(): void {
     this.router.navigate(['add-trip']);
   }
