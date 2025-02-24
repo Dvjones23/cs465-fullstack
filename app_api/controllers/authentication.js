@@ -1,0 +1,74 @@
+const passport = require('passport');
+const mongoose = require('mongoose');
+const User = mongoose.model('users');
+
+const register = async (req, res) => {
+    if (!req.body.name || !req.body.email || !req.body.password) {
+        return res
+            .status(400)
+            .json({"message": "All fields required"});
+    }
+
+    const user = new User();
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.setPassword(req.body.password);
+
+    try {
+        await user.save();
+        const token = user.generateJwt();
+        return res
+            .status(200)
+            .json({token});
+    } catch(e) {
+        return res
+            .status(400)
+            .json(e);
+    }
+    /*
+    Commented out as MongooseError('Model.prototype.save() 
+    no longer accepts a callback'
+     
+    user.save((err) => {
+        if (err) {
+            res
+                .status(404)
+                .json(err);
+        } else {
+            const token = user.generateJwt();
+            res
+                .status(200)
+                .json({token});
+        }
+    })*/
+};
+
+const login = (req, res) => {
+    if (!req.body.email || !req.body.password) {
+        return res
+            .status(400)
+            .json({"message": "All fields required"});
+    }
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return res
+                .status(404)
+                .json(e);
+        }
+        if (user) {
+            const token = user.generateJwt();
+            res
+                .status(200)
+                .json({token});
+        } else {
+            res
+                .status(401)
+                .json(e);
+        }
+    }) (req, res);
+};
+
+module.exports = {
+    register,
+    login
+};
