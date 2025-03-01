@@ -1,3 +1,7 @@
 export class AuthResponse {
-    token: string = '';
+    token: string;
+
+    constructor() {
+        this.token = '';
+    }
 }

@@ -3,21 +3,19 @@ import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-home',
-  imports: [],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-
 export class HomeComponent implements OnInit {
 
   constructor(
-    private authenticationService: AuthenticationService
+    private authService: AuthenticationService
   ) { }
 
   ngOnInit() {
   }
 
   public isLoggedIn(): boolean {
-    return this.authenticationService.isLoggedIn();
+    return this.authService.isLoggedIn();
   }
 }

@@ -12,23 +12,28 @@ import { Router } from '@angular/router';
   selector: 'app-trip-listing',
   standalone: true,
   imports: [CommonModule, TripCardComponent],
-  templateUrl: '../trip-listing.component.html',
-  styleUrl: '../trip-listing.component.css',
+  templateUrl: './trip-listing.component.html',
+  styleUrl: './trip-listing.component.css',
   providers: [TripDataService]
 })
 
 export class TripListingComponent implements OnInit {
   
-  trips!: Trip[];
+  trips: Trip[] = [];
   message: string = '';
 
   constructor(
     private tripDataService: TripDataService,
-    private authenticationService: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private authenticationService: AuthenticationService
     ) {
     console.log('trip-listing constructor');
   }
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
+  }
+
   public addTrip(): void {
     this.router.navigate(['add-trip']);
   }
@@ -51,10 +56,6 @@ export class TripListingComponent implements OnInit {
           console.log('Error: ' + error);
         }
       })
-  }
-
-  public isLoggedIn(): boolean {
-    return this.authenticationService.isLoggedIn();
   }
 
   ngOnInit(): void{

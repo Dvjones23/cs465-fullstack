@@ -1,61 +1,49 @@
 const passport = require('passport');
 const mongoose = require('mongoose');
-const User = mongoose.model('users');
+const User = require('../models/user');
 
-const register = async (req, res) => {
+const  register = async(req, res) => {
+    //Validate record and insuring all paremetes are there
     if (!req.body.name || !req.body.email || !req.body.password) {
         return res
             .status(400)
             .json({"message": "All fields required"});
-    }
+        }
 
+    // Create new user
     const user = new User();
     user.name = req.body.name;
     user.email = req.body.email;
     user.setPassword(req.body.password);
 
-    try {
-        await user.save();
-        const token = user.generateJwt();
-        return res
-            .status(200)
-            .json({token});
-    } catch(e) {
-        return res
-            .status(400)
-            .json(e);
-    }
-    /*
-    Commented out as MongooseError('Model.prototype.save() 
-    no longer accepts a callback'
-     
-    user.save((err) => {
-        if (err) {
-            res
-                .status(404)
-                .json(err);
-        } else {
-            const token = user.generateJwt();
-            res
-                .status(200)
-                .json({token});
-        }
-    })*/
+    // Save user
+    const q = await user.save();
+
+  if (!q) {
+    return res.status(400).json(err);
+  } else {
+    const token = user.generateJwt();
+    return res.status(200).json(token);
+  }
 };
 
 const login = (req, res) => {
+    //Validate record and insuring all paremetes are there
     if (!req.body.email || !req.body.password) {
         return res
             .status(400)
             .json({"message": "All fields required"});
     }
+    //Passport handles authentication 
     passport.authenticate('local', (err, user, info) => {
         if (err) {
+            //Error in authorization process
             return res
                 .status(404)
-                .json(e);
+                .json(err);
         }
         if (user) {
+            //Return new user token
             const token = user.generateJwt();
             res
                 .status(200)
@@ -63,7 +51,7 @@ const login = (req, res) => {
         } else {
             res
                 .status(401)
-                .json(e);
+                .json(info);
         }
     }) (req, res);
 };

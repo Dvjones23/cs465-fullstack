@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { BROWSER_STORAGE } from '../storage';
 import { User } from '../models/user';
 import { AuthResponse } from '../models/authresponse';
@@ -14,8 +14,9 @@ export class AuthenticationService {
     private tripDataService: TripDataService
   ) { }
 
-  public getToken(): string | null {
-    return this.storage.getItem('travlr-token');
+  public getToken(): string {
+    const token = this.storage.getItem('travlr-token');
+    return token ? token : '';
   }
 
   public saveToken(token: string): void {
@@ -24,8 +25,12 @@ export class AuthenticationService {
 
   public login(user: User): Promise<any> {
     return this.tripDataService.login(user)
-    .then((authResp: AuthResponse) =>
-    this.saveToken(authResp.token));
+      .then((authResp: AuthResponse) => this.saveToken(authResp.token));
+  }
+
+  public register(user: User): Promise<any> {
+    return this.tripDataService.register(user)
+      .then((authResp: AuthResponse) => this.saveToken(authResp.token))
   }
 
   public logout(): void {
@@ -35,19 +40,16 @@ export class AuthenticationService {
   public isLoggedIn(): boolean {
     const token: string | null = this.getToken();
     if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp > (Date.now() / 1000);
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.exp > (Date.now() / 1000);
     } else {
-      return false;
+        return false;
     }
   }
 
-  public getCurrentUser(): User | null {
-    const token: string | null = this.getToken();
-    if (token && this.isLoggedIn()) {
-      const { email, name } = JSON.parse(atob(token.split('.')[1]));
-      return { email, name } as User;
-    }
-    return null;
-  }
+  public getCurrentUser(): User {
+    const token: string = this.getToken();
+    const { email, name } = JSON.parse(atob(token.split('.')[1]));
+    return { email, name } as User;
+  } 
 }

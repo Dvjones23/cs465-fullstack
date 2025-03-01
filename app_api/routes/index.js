@@ -1,19 +1,27 @@
 const express = require('express'); //Express app
-const router = express.Router();    //Router logic
+const router = express.Router();
 const { expressjwt: jwt } = require('express-jwt');
-const auth = jwt({ secret: process.env.JWT_SECRET, userProperty: 'payload', algorithms: ['HS512'] });
+const auth = jwt({
+    secret: process.env.JWT_SECRET,
+    userProperty: 'payload',
+    algorithms: ["HS256"],
+});
 
-const authController = require('../controllers/authentication'); //import the authentication controller
-const tripsController = require('../controllers/trips'); //import the trips controller
+//this is where we import the controllers we will route
+const tripsController = require('../controllers/trips');
+const authController = require('../controllers/authentication');
 
-router
-    .route('/login')
-    .post(authController.login);
-
+//define route for registration endpoint
 router
     .route('/register')
     .post(authController.register);
 
+//define route for login
+router
+    .route('/login')
+    .post(authController.login)
+
+//define route for our trips endpoint
 router
     .route('/trips')
     .get(tripsController.tripsList) //GET method routes tripList
@@ -23,5 +31,5 @@ router
     .route('/trips/:tripCode')
     .get(tripsController.tripsFindByCode)
     .put(auth, tripsController.tripsUpdateTrip);
-
+    
 module.exports = router;
