@@ -52,7 +52,7 @@ export class TripDataService {
     };
     //console.log('Inside TripDataService::updateTrip');
     return this.http
-    .put<Trip>(this.url + '/' + formData.code, formData);
+    .put<Trip>(this.url + '/' + formData.code, formData, httpOptions);
   }
 
   public login(user: User): Promise<AuthResponse> {
